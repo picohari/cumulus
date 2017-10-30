@@ -35,7 +35,14 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             //'site_id',
-            'name',
+            //'name',
+            [
+                'label' => "Name",
+                'format' => 'raw',
+                    'value' => function( $model ) {
+                        return Html::a($model->name, ['location/view',   'site_id' => $model->site_id], ['class' => 'profile-link']);
+                    },
+            ],
             'city',
             [
                 'label' => "Nr. of Device(s)",

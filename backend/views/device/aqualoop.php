@@ -63,11 +63,11 @@ $this->registerJs('
             host,
             port,
             path,
-            "mqtt_panel" + parseInt(Math.random() * 100, 10)
+            "AL-MS-CU_" + Math.floor((1 + Math.random()) * 0x100000).toString(16)
     );
         var options = {
-            userName : "admin",
-            password : "admin",
+            userName : "device",    // Diese Option auch über YII übergeben
+            password : "device",    // PW verschlüsseln ?
             mqttVersion: 3,
             timeout: 3,
             useSSL: useTLS,
@@ -378,7 +378,11 @@ $this->registerJs('
             'name',
             'status',
             'subscription.site.name',
-            'contact.name'
+            'contact.name',
+            [
+                'label' => Html::activeLabel($model, 'created_ts'),
+                'value' => date("D, j. F Y H:i:s T", $model->created_ts),
+            ],
         ],
     ]) ?>
 

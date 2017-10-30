@@ -54,6 +54,8 @@ class SiteController extends Controller
      */
     public function actions()
     {
+        Yii::$app->view->params['customParam'] = false;
+
         return [
             'error' => [
                 'class' => 'yii\web\ErrorAction',
@@ -72,6 +74,14 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+        
+        $isFrontpage = false;
+          if (  (  (Yii::$app->controller->id).'/'.(Yii::$app->controller->action->id) )  == 'site/index'  ) { 
+              $isFrontpage = true;
+        }
+
+        Yii::$app->view->params['customParam'] = $isFrontpage;
+
         return $this->render('index');
     }
 
@@ -210,4 +220,36 @@ class SiteController extends Controller
             'model' => $model,
         ]);
     }
+
+
+
+
+
+
+
+    public function actionProduct()
+    {
+        return $this->render('product');
+    }
+    
+    public function actionPricing()
+    {
+        return $this->render('pricing');
+    }
+
+    public function actionApplications()
+    {
+        return $this->render('applications');
+    }
+
+    public function actionRainwater()
+    {
+        return $this->render('rainwater');
+    }
+
+    public function actionInfiltration()
+    {
+        return $this->render('infiltration');
+    }
+
 }

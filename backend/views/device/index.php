@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Create Device'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('app', 'Add Device'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -36,8 +36,33 @@ $this->params['breadcrumbs'][] = $this->title;
             //'device_id',
             'product.name',
             //'uuid',
-            'name',
-            'subscription.site.name',
+            //'name',
+            [
+                'label' => "Name",
+                'format' => 'raw',
+                    'value' => function( $model ) {
+                        if ($model->product_id == "10")
+                            return Html::a($model->name, ['device/aqualoop',   'device_id' => $model->device_id], ['class' => 'profile-link']);
+                        if ($model->product_id == "20")
+                            return Html::a($model->name, ['device/rainmaster', 'device_id' => $model->device_id], ['class' => 'profile-link']);
+                        //if ($model->product_id == null)
+                        return Html::encode($model->name);
+                    },
+            ],
+
+            'subscription.site.name', /* OK */
+/*
+            [
+                'label' => "Location Name",
+                'format' => 'raw',
+                    // 'value' => 'subscription.site.name', // OK too...
+                    'value' => function($dataProvider) {    // does not work form here...
+                        return Html::encode($dataProvider->subscription->site->name);
+                        //return Html::a($model->subscription->site->name, ['location/view',   'site_id' => "2"], ['class' => 'profile-link']);
+                        //return Html::a($model->subscription->site->name, ['location/view',   'site_id' => $model->subscription->site_id], ['class' => 'profile-link']);
+                    },
+            ],
+*/
             //'contact.name',
             // 'version',
             // 'status',

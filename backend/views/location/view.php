@@ -39,6 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             /*'device_id',*/
             /*'name',*/
+            'product.name',
             [
                 'label' => "Name",
                 'format' => 'raw',
@@ -51,7 +52,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         return Html::encode($model->name);
                     },
             ],
-            'product.name',
             /*'status',*/
             [
                 'label' => "Status",

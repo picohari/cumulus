@@ -1,7 +1,49 @@
+@import url(//fonts.googleapis.com/css?family=Ubuntu);
+
 html,
 body {
     height: 100%;
+    font-family: 'Ubuntu', sans-serif;
 }
+
+
+.navbar-brand,
+.navbar-nav li a {
+    margin-top: 45px;
+}
+
+.dropdown-menu li a {
+    margin-top: 0px;
+}
+
+.navbar-inverse {
+    background-color: #fff;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.35);
+}
+
+.navbar-inverse {
+    border-color: #fff;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: #337ab7;
+}
+
+.navbar-inverse .navbar-nav > li > a:hover {
+    color: #337ab7;
+    background-color: #eee;
+}
+
+.navbar-inverse .navbar-nav > .active > a, .navbar-inverse .navbar-nav > .active > a:hover, .navbar-inverse .navbar-nav > .active > a:focus {
+    color: #337ab7;
+    background-color: #eee;
+}
+
+.navbar-inverse .navbar-nav > .open > a, .navbar-inverse .navbar-nav > .open > a:hover, .navbar-inverse .navbar-nav > .open > a:focus {
+    color: #337ab7;
+    background-color: #eee;
+}
+
 
 .wrap {
     min-height: 100%;
@@ -11,7 +53,7 @@ body {
 }
 
 .wrap > .container {
-    padding: 70px 15px 20px;
+    padding: 120px 15px 20px;
 }
 
 .footer {
@@ -20,6 +62,64 @@ body {
     border-top: 1px solid #ddd;
     padding-top: 20px;
 }
+
+.intro-slogan {
+  /* background: url("../images/water-drop-on-a-leaf-macro.jpg") no-repeat scroll center center / cover  rgba(0, 0, 0, 0); */
+  background: url("../images/field-sky.jpg") no-repeat scroll center center / cover  rgba(0, 0, 0, 0);
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+
+/*
+.intro-header {
+  //background: url("../images/water-drop-on-a-leaf-macro.jpg") no-repeat scroll center center / cover  rgba(0, 0, 0, 0);
+  padding-bottom: 10px;
+  padding-top: 10px;
+  text-align: center;
+}
+*/
+.intro-message > h3 {
+  //text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.6);
+  //color: #f8f8f8;
+}
+
+.intro-header .container {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.intro-message {
+  //color: #337ab7;
+  //background-color: #eee;
+
+  padding-bottom: 10%;
+  padding-top: 10%;
+  position: relative;
+}
+
+.intro-message > h2 {
+    margin-top: 20px;
+}
+
+.intro-message > h2 > span {
+    margin: 0;
+    padding: 3px 15px;
+    color: #FFF;
+    font-size: 32px;
+    line-height: 64px;
+    background: #1C549D;
+    text-align: center;
+}
+
+.intro-message > h2 > span:nth-child(2) {
+    padding: 10px 15px;
+    font-size: 24px;
+    line-height: 30px;
+    font-weight: normal;
+}
+
 
 .jumbotron {
     text-align: center;
@@ -49,11 +149,11 @@ a.asc:after, a.desc:after {
 }
 
 a.asc:after {
-    content: "\e151";
+    content: /*"\e113"*/ "\e151";
 }
 
 a.desc:after {
-    content: "\e152";
+    content: /*"\e114"*/ "\e152";
 }
 
 .sort-numerical a.asc:after {
@@ -72,13 +172,8 @@ a.desc:after {
     content: "\e156";
 }
 
-.grid-view td {
+.grid-view th {
     white-space: nowrap;
-}
-
-.grid-view .filters input,
-.grid-view .filters select {
-    min-width: 50px;
 }
 
 .hint-block {
@@ -95,26 +190,92 @@ a.desc:after {
     margin: 0 0 15px 0;
 }
 
-/* align the logout "link" (button in form) of the navbar */
-.nav li > form > button.logout {
-    padding: 15px;
-    border: none;
+
+
+
+
+
+
+
+
+
+
+
+.product-comparison table {
+    margin-top: 1em;
+    width: 100%;
 }
 
-@media(max-width:767px) {
-    .nav li > form > button.logout {
-        display:block;
-        text-align: left;
-        width: 100%;
-        padding: 10px 15px;
-    }
+.product-comparison table th {
+    width: 24%;
 }
 
-.nav > li > form > button.logout:focus,
-.nav > li > form > button.logout:hover {
-    text-decoration: none;
+.product-comparison table th:first-child {
+    width: 28%;
 }
 
-.nav > li > form > button.logout:focus {
-    outline: none;
+.product-comparison table th, .product-comparison table td {
+    vertical-align: top;
+    text-align: center;
 }
+
+.product-comparison table th:first-child, .product-comparison table td:first-child {
+    text-align: left;
+}
+
+.product-comparison table th {
+    font-weight: 400;
+    padding: 1em;
+}
+
+.product-comparison table th span {
+    font-weight: bold;
+}
+
+.product-comparison table th a.btn {
+    /* font-size: 0.85rem; */
+}
+
+.product-comparison table th:first-child {
+    vertical-align: middle;
+    padding-bottom: 1em;
+    //font-size: 1.2rem;
+}
+
+.product-comparison table td {
+    background-color: #f5f6f6;
+    border-bottom: 1px solid #fff;
+    padding: 0.5em 1em;
+    vertical-align: top;
+}
+
+.product-comparison table tr:hover td {
+    background-color: #e8eaea;
+}
+
+.product-comparison .feature-set-row td {
+    background-color: #e8eaea;
+}
+
+
+/* Feature set rows, optional Learn More links */
+
+.product-comparison .feature-set-row td:first-child * {
+    font-weight: normal;
+    margin-left: 1em;
+}
+
+.product-comparison .feature-set-row td:first-child:first-child {
+    font-weight: bold;
+}
+
+.product-comparison .comparison-footnote {
+    text-align: left;
+    font-size: 0.75em;
+}
+
+.product-comparison td p {
+    display: inline;
+}
+
+

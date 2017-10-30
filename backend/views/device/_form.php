@@ -46,10 +46,41 @@ use backend\models\Contact;
     <?= Html::activeDropDownList($model, 'contact_id', [null => "none"] + ArrayHelper::map(Contact::find()->all(), 'contact_id', 'name'), ['class' => "form-control"])  /*, 'prompt'=>'NONE'*/ ?> 
     </div>
 
+
+
+    <div class="row">
+
+        <div class="col-md-6">
+            <div class="form-group field-created">
+                <?= Html::activeLabel($model, 'created_ts'); ?>
+                <p id="device-created"><?php echo date("D, j. F Y H:i:s T", $model->created_ts); ?></p>
+                <div class="help-block"></div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group field-modified">
+                <?= Html::activeLabel($model, 'modified_ts'); ?>
+                <p id="device-created"><?php echo date("D, j. F Y H:i:s T", $model->modified_ts); ?></p>
+                <div class="help-block"></div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+
+
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
         <?php /* = Html::a(Yii::t('app', 'Create Location'), ['location/create', 'id' => $model->subscription], ['class' => 'btn btn-success']) */ ?>
     </div>
+
 
     <?php ActiveForm::end(); ?>
 

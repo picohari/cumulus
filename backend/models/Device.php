@@ -31,6 +31,19 @@ class Device extends \yii\db\ActiveRecord
         return 'device';
     }
 
+
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'createdAtAttribute' => 'created_ts',
+                'updatedAtAttribute' => 'modified_ts',
+            ]
+        ];
+    }
+
+
     /**
      * @inheritdoc
      */
@@ -61,6 +74,8 @@ class Device extends \yii\db\ActiveRecord
             'version' => Yii::t('app', 'Version'),
             'status' => Yii::t('app', 'Status'),
             'description' => Yii::t('app', 'Description'),
+            'created_ts' => Yii::t('app', 'Creation Date'),
+            'modified_ts' => Yii::t('app', 'Last updated'),
         ];
     }
 

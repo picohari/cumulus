@@ -34,4 +34,4 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 
 </div>
 
-<?php echo '<pre>'; print_r($subscription); ?>
+<?php //echo '<pre>'; print_r($subscription); ?>

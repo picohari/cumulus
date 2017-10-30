@@ -6,7 +6,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model backend\models\Device */
 
-$this->title = Yii::t('app', 'Create Device');
+$this->title = Yii::t('app', 'Add Device');
+$this->blocks['content-header'] = "Add new INTEWA Device";
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Devices'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 

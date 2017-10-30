@@ -100,7 +100,6 @@ class AlertingController extends Controller
             'device' => $device,
             'searchModel'  => $searchModel,
             'dataProvider' => $dataProvider,
-            'dataProvider' => $dataProvider,
             'count' => $count,
             'contact' => $contact,
             'post' => $post,

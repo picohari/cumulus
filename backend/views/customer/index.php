@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
@@ -37,7 +38,22 @@ $this->params['breadcrumbs'][] = $this->title;
             'email:email',
             // 'prime_use',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            ['class' => 'yii\grid\ActionColumn',
+                
+             'urlCreator' => function( $action, $model, $key, $index ) {
+                    if ($action == "view") {
+                        return Url::to(['customer/view',   'customer_id' => $model->customer_id]);
+                    }
+                    if ($action == "update") {
+                        return Url::to(['customer/update', 'customer_id' => $model->customer_id]);
+                    }
+                    if ($action == "delete") {
+                        return Url::to(['customer/delete', 'customer_id' => $model->customer_id]);
+                    }
+                },
+
+             'controller' => 'customer'
+            ],
         ],
     ]); ?>
 </div>
@@ -54,7 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 
-<div class="customer-index">
+<div class="contact-index">
 <div class="box">
 
 <div class="box-header with-border">
@@ -76,7 +92,20 @@ $this->params['breadcrumbs'][] = $this->title;
             'phone',
             // 'prime_use',
 
-            ['class' => 'yii\grid\ActionColumn', 'controller' => 'contact'],
+            ['class' => 'yii\grid\ActionColumn',
+
+             'urlCreator' => function( $action, $model, $key, $index ) {
+                    if ($action == "view") {
+                        return Url::to(['contact/view',   'contact_id' => $model->contact_id]);
+                    }
+                    if ($action == "update") {
+                        return Url::to(['contact/update', 'contact_id' => $model->contact_id]);
+                    }
+                    if ($action == "delete") {
+                        return Url::to(['contact/delete', 'contact_id' => $model->contact_id]);
+                    }
+                },
+                'controller' => 'contact'],
         ],
     ]); ?>
 </div>
