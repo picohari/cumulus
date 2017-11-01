@@ -78,7 +78,10 @@ use backend\models\Contact;
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
-        <?php /* = Html::a(Yii::t('app', 'Create Location'), ['location/create', 'id' => $model->subscription], ['class' => 'btn btn-success']) */ ?>
+        <?php 
+        if ($model->product_id == "10")
+            echo Html::a(Yii::t('app', 'Back to Device'), ['device/aqualoop', 'device_id' => $model->device_id], ['class' => 'btn btn-success']);
+        ?>
     </div>
 
 

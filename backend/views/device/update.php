@@ -9,7 +9,10 @@ $this->title = Yii::t('app', 'Update {modelClass}: ', [
     'modelClass' => 'Device',
 ]) . $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Devices'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'device_id' => $model->device_id]];
+
+if ($model->product_id == "10")
+    $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['device/aqualoop', 'device_id' => $model->device_id]];
+
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
 <div class="device-update">

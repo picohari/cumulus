@@ -55,7 +55,7 @@ class ParametersAl extends \yii\db\ActiveRecord
             'parameters_id' => Yii::t('app', 'Parameters ID'),
             'device_id' => Yii::t('app', 'Device ID'),
             'user_id' => Yii::t('app', 'User ID'),
-            'mem_cnt' => Yii::t('app', 'Mem Cnt'),
+            'mem_cnt' => Yii::t('app', 'MEM Number'),
             'c1_cnt' => Yii::t('app', 'C1'),
             'c2_cnt' => Yii::t('app', 'C2'),
             't1_hour' => Yii::t('app', 'T1 Hour'),

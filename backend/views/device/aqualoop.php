@@ -345,8 +345,9 @@ $this->registerJs('
         <div class="col-md-6">
             <div class="float-left">
                 <p>
-                    <?= Html::a('Update',   ['update',         'device_id' => $model->device_id], ['class' => 'btn btn-primary']) ?>
-                    <?= Html::a('Alerting', ['alerting/index', 'device_id' => $model->device_id], ['class' => 'btn btn-warning']) ?>
+                    <?= Html::a('Update',     ['update',           'device_id' => $model->device_id], ['class' => 'btn btn-primary']) ?>
+                    <?= Html::a('Parameters', ['parameters/view',  'device_id' => $model->device_id], ['class' => 'btn btn-primary']) ?>
+                    <?= Html::a('Alerting',   ['alerting/index',   'device_id' => $model->device_id], ['class' => 'btn btn-warning']) ?>
                 </p>
             </div>
         </div>
