@@ -23,7 +23,8 @@
         "mikemadisonweb/yii2-rabbitmq": "^1.6",
         "dmstr/yii2-adminlte-asset": "2.*",
         "oncesk/yii-node-socket": "^2.0",
-        "yiisoft/yii2-httpclient": "^2.0"
+        "yiisoft/yii2-httpclient": "^2.0",
+        "dektrium/yii2-user": "^0.9.13"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

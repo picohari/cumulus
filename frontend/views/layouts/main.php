@@ -25,57 +25,6 @@ AppAsset::register($this);
 <body>
     <?php $this->beginBody() ?>
 
-    <?php if ($this->params['customParam']): ?>
-
-        <div class="intro-slogan">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="intro-message">
-                        <!-- img class="image-responsive text-center" src="/frontend/web/images/intewa_logo.png" width="25%" -->
-
-                        <h2>
-                        <br><br><br><br>
-                        <span>INTEWA Cumulus</span><br>
-                        <span>The monitoring platform for rainwater applications</span>
-                        </h2>
-                        
-                        <!--
-                        <ul class="list-inline intro-register-buttons">
-                            <li>
-                                <a class="btn btn-default btn-lg" href="<?php echo Url::to(['site/login']); ?>"><i class="fa fa-login fa-fw"></i> <span class="network-name">Login</span></a>
-                            </li>
-                            <li>
-                                <a class="btn btn-default btn-lg" href="<?php echo Url::to(['site/signup']); ?>"><i class="fa fa-signup fa-fw"></i> <span class="network-name">Register</span></a>
-                            </li>
-                        </ul>
-                        -->
-
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- /.container -->
-
-        </div>
-        <div class="intro-header">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="">
-
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- /.container -->
-        </div>
-
-        
-    <?php endif; ?>
-
     <div class="wrap">
         <?php
             NavBar::begin([
@@ -99,13 +48,15 @@ AppAsset::register($this);
                 ['label' => 'Contact', 'url' => ['/site/contact']],
             ];
             if (Yii::$app->user->isGuest) {
-                $menuItems[] = ['label' => 'Signup', 'url' => ['/site/signup']];
-                $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
+                $menuItems[] = ['label' => 'Signup', 'url' => ['/user/registration/register']];
+                //$menuItems[] = ['label' => 'Login',  'url' => ['/user/security/login']];
+                $menuItems[] = ['label' => 'Login', 'url' => \Yii::$app->urlManagerBackend->baseUrl];
+                //$menuItems[] = ['label' => 'Login', 'url' => \Yii::$app->urlManagerBackend->createUrl(['site/index'])];
             } else {
                 $menuItems[] = [
                     'label' => 'Logout (' . Yii::$app->user->identity->username . ')',
-                    'url' => ['/site/logout'],
-                    'linkOptions' => ['data-method' => 'post']
+                    'url' => ['/user/security/logout'],
+                    'linkOptions' => ['data-method' => 'post','get']
                 ];
             }
             echo Nav::widget([

@@ -13,13 +13,24 @@ return [
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
-    'modules' => [],
+
+    'modules' => [
+        'user' => [
+            // following line will restrict access to profile, recovery, registration and settings controllers from backend
+            //'as backend' => 'dektrium\user\filters\BackendFilter',
+            'enableFlashMessages' => false,
+            'enableAccountDelete' => true,
+        ],
+    ],
+
     'components' => [
 
         'view' => [
              'theme' => [
                  'pathMap' => [
-                    '@app/views' => '@vendor/dmstr/yii2-adminlte-asset/example-views/yiisoft/yii2-app'
+                    //'@app/views' => '@vendor/dmstr/yii2-adminlte-asset/example-views/yiisoft/yii2-app'
+                    '@app/views'           => '@app/views',
+                    '@dektrium/user/views' => '@app/views/user',
                  ],
              ],
         ],
@@ -36,15 +47,18 @@ return [
             'csrfParam' => '_csrf-backend',
         ],
 
+        /*
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
         ],
+        */
 
         'session' => [
             // this is the name of the session cookie used for login on the backend
-            'name' => 'advanced-backend',
+            //'name' => 'advanced-backend',
+            'name' => 'cumulus-session',
         ],
 
         'log' => [
@@ -82,5 +96,44 @@ return [
             'socketLogFile' => '/var/log/node-socket.log',
         ],
     ],
+
+    //if guest user access site, redirect to login page.
+    'as beforeRequest' => [
+        'class' => 'yii\filters\AccessControl',
+        //'class' => 'dektrium\user\Module',
+
+        'ruleConfig' => [
+                    'class' => \dektrium\user\filters\AccessRule::className(),
+        ],
+
+        'rules' => [
+            [
+                'actions' => ['login', 'error'],
+                'allow' => true,
+            ],
+            [
+                'allow' => true,
+                'roles' => ['@'],
+            ],
+        ],
+    ],
+
+    /*
+    //if guest user access site, redirect to login page.
+    'as beforeRequest' => [
+        'class' => 'yii\filters\AccessControl',
+        'rules' => [
+            [
+                'actions' => ['login', 'error'],
+                'allow' => true,
+            ],
+            [
+                'allow' => true,
+                'roles' => ['@'],
+            ],
+        ],
+    ],
+    */
+
     'params' => $params,
 ];

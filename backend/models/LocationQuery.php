@@ -2,6 +2,8 @@
 
 namespace backend\models;
 
+use Yii;
+
 /**
  * This is the ActiveQuery class for [[Location]].
  *
@@ -31,4 +33,10 @@ class LocationQuery extends \yii\db\ActiveQuery
     {
         return parent::one($db);
     }
+
+    public function owned()
+    {
+        return $this->andWhere(['user_id' => Yii::$app->user->id]);
+    }
+
 }

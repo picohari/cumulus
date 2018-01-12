@@ -38,9 +38,11 @@ class CustomerController extends Controller
     {
         $searchCustomerModel = new CustomerSearch();
         $dataProviderCustomer = $searchCustomerModel->search(Yii::$app->request->queryParams);
+        $dataProviderCustomer->query->andWhere(['user_id' => Yii::$app->user->id]);
 
         $searchContactModel = new ContactSearch();
         $dataProviderContact = $searchContactModel->search(Yii::$app->request->queryParams);
+        $dataProviderContact->query->andWhere(['user_id' => Yii::$app->user->id]);
 
         return $this->render('index', [
             'searchCustomerModel' => $searchCustomerModel,

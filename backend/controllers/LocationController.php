@@ -40,7 +40,8 @@ class LocationController extends Controller
     {
         $searchModel = new LocationSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
+        $dataProvider->query->andWhere(['user_id' => Yii::$app->user->id]);
+        
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,

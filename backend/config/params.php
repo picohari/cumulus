@@ -2,8 +2,8 @@
 return [
     'adminEmail' => 'admin@example.com',
 
-    //'mqttServer' => '192.168.200.150',
-    'mqttServer' => '192.168.1.107',
+    'mqttServer' => 'cumulus.intewa.net',
+    //'mqttServer' => '192.168.1.101',
 
     'opentsdbServer' => [
         'datasource' => [
@@ -11,8 +11,8 @@ return [
             	'enabled' => true,
             	'type' => "ajax",
 	            'url' => [
-	                //"192.168.200.150:4242",
-	            	"192.168.1.107:4242",
+	                "192.168.200.162:4242",
+	            	//"192.168.1.101:4242",
 	                //"monitor.intewa.net:4242"
 	            ],
 	            //'trim'	=> "301",

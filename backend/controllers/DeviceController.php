@@ -36,13 +36,16 @@ class DeviceController extends Controller
      */
     public function actionIndex()
     {
+
         $searchModel = new DeviceSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->query->andWhere(['user_id' => Yii::$app->user->id]);
 
         return $this->render('index', [
             'searchModel'  => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+
     }
 
     /**

@@ -38,12 +38,12 @@ use backend\models\Contact;
 
     <div class="form-group">
     <?= Html::activeLabel($model, 'subscription.site.name'); ?>
-    <?= Html::activeDropDownList($model, 'subscription', [null => "none"] + ArrayHelper::map(Location::find()->all(), 'site_id', 'name'), ['class' => "form-control"])  /*, 'prompt'=>'NONE'*/ ?> 
+    <?= Html::activeDropDownList($model, 'subscription', [null => "none"] + ArrayHelper::map(Location::find()->owned()->all(), 'site_id', 'name'), ['class' => "form-control"])  /*, 'prompt'=>'NONE'*/ ?> 
     </div>
 
     <div class="form-group">
     <?= Html::activeLabel($model, 'contact.name'); ?>
-    <?= Html::activeDropDownList($model, 'contact_id', [null => "none"] + ArrayHelper::map(Contact::find()->all(), 'contact_id', 'name'), ['class' => "form-control"])  /*, 'prompt'=>'NONE'*/ ?> 
+    <?= Html::activeDropDownList($model, 'contact_id', [null => "none"] + ArrayHelper::map(Contact::find()->owned()->all(), 'contact_id', 'name'), ['class' => "form-control"])  /*, 'prompt'=>'NONE'*/ ?> 
     </div>
 
 

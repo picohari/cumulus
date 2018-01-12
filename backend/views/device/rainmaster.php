@@ -64,8 +64,8 @@ $this->registerJs('
             "mqtt_panel" + parseInt(Math.random() * 100, 10)
     );
         var options = {
-            userName : "admin",
-            password : "admin",
+            userName : "device",
+            password : "device",
             mqttVersion: 3,
             timeout: 3,
             useSSL: useTLS,
