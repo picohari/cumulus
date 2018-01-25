@@ -14,257 +14,138 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->registerJs('
     var server = "'.Yii::$app->params['mqttServer'].'";
     var uuid = "'.$model->uuid.'";
+    var device_id = "'.$model->device_id.'";
     ',
     \yii\web\View::POS_HEAD, null
 );
 
 ?>
 
-
 <!-- Bootstrap core CSS -->
 <!-- link href="css/bootstrap.css" rel="stylesheet" -->
 <!-- jQuery -->
 <!-- script type="text/javascript" src="js/jquery-1.11.2.min.js"></script -->
-<!-- Sparkline -->
-<script type="text/javascript" src="js/jquery.sparkline.min.js"></script>
-<!-- jgPlot -->
-<link class="include" rel="stylesheet" type="text/css" href="dist/jquery.jqplot.min.css" />
+<script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js"></script>
+<link   type="text/css" href="js/jquery-ui/jquery-ui.min.css" rel="stylesheet">
 
-<script type="text/javascript" src="js/jquery.jqplot.min.js"></script>
-<script type="text/javascript" src="js/jqplot.canvasTextRenderer.min.js"></script>
-<script type="text/javascript" src="js/jqplot.canvasAxisLabelRenderer.min.js"></script>
-<script type="text/javascript" src="js/jqplot.dateAxisRenderer.min.js"></script>
+<!-- jQuery Sparkline -->
+<script type="text/javascript" src="js/jquery-sparkline/jquery.sparkline.min.js"></script>
+
+<!-- jQuery jgPlot -->
+<!--
+<link class="include" rel="stylesheet" type="text/css" href="js/jquery-jqplot/jquery.jqplot.min.css" />
+<script type="text/javascript" src="js/jquery-jqplot/jquery.jqplot.min.js"></script>
+<script type="text/javascript" src="js/jquery-jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+<script type="text/javascript" src="js/jquery-jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
+<script type="text/javascript" src="js/jquery-jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
+<script type="text/javascript" src="js/jquery-jqplot/plugins/jqplot.cursor.min.js"></script>
+<script type="text/javascript" src="js/jquery-jqplot/plugins/jqplot.highlighter.min.js"></script>
+-->
+
+<!-- flot -->
+<script type="text/javascript" src="js/flot/jquery.flot.js"></script>
+<script type="text/javascript" src="js/flot/jquery.flot.crosshair.js"></script>
+<script type="text/javascript" src="js/flot/jquery.flot.time.js"></script>
+<script type="text/javascript" src="js/flot/jquery.flot.selection.js"></script>
+<script type="text/javascript" src="js/flot/jquery.flot.resize.js"></script>
+<!--script type="text/javascript" src="js/ext/curvedLines.js"></script -->
 
 <!-- socket.io for communication -->
 <!-- script type="text/javascript" src="http://localhost:3000/socket.io/socket.io.js"></script -->
 
 <!-- MQTT Websocket -->
-<script type="text/javascript" src="js/mqttws31.js"></script>
-<script type="text/javascript">
+<script type="text/javascript" src="js/mqtt/mqttws31.js"></script>
 
-    var livingTemp = new Array();
-    var basementTemp = new Array();
+<!-- Application specific sources -->
+<script type="text/javascript" src="js/init.js"></script>
+<script type="text/javascript" src="js/functions.js"></script>
+<script type="text/javascript" src="js/entities.js"></script>
+<script type="text/javascript" src="js/wui.js"></script>
+<script type="text/javascript" src="js/entity.js"></script>
+<script type="text/javascript" src="js/options.js"></script>
 
-    var host = server;
-    var port = 15675;
-    var topic = uuid + '/#';
-    var useTLS = false;
-    var cleansession = true;
-    var mqtt;
-    var reconnectTimeout = 2000;
+<!--
+<script type="text/javascript" src="js/graph.js"></script>
+-->
 
-    var offlineTimer;
 
-    function MQTTconnect() {
-    if (typeof path == "undefined") {
-        path = '/ws';
-    }
-    mqtt = new Paho.MQTT.Client(
-            host,
-            port,
-            path,
-            "AL-MS-CU_" + Math.floor((1 + Math.random()) * 0x100000).toString(16)
-    );
-        var options = {
-            userName : "device",    // Diese Option auch über YII übergeben
-            password : "device",    // PW verschlüsseln ?
-            mqttVersion: 3,
-            timeout: 3,
-            useSSL: useTLS,
-            cleanSession: cleansession,
-            onSuccess: onConnect,
-            onFailure: function (message) {
-                $('#status').html("Connection failed: " + message.errorMessage + "Retrying...");
-                setTimeout(MQTTconnect, reconnectTimeout);
-            }
-        };
+<script type="text/javascript" src="js/mqtt.js"></script>
 
-        mqtt.onConnectionLost = onConnectionLost;
-        mqtt.onMessageArrived = onMessageArrived;
-        console.log("Host: "+ host + ", Port: " + port + ", Path: " + path + " TLS: " + useTLS);
-        console.log("Topic: "+ topic);
-        mqtt.connect(options);
-    };
-
-    function onConnect() {
-        $('#status').html('Connected to ' + host + ':' + port + path);
-        mqtt.subscribe(topic, {qos: 0});
-        $('#topic').html(topic);
-    };
-
-    function onConnectionLost(response) {
-        setTimeout(MQTTconnect, reconnectTimeout);
-        //$('#status').html("Connection lost: " + response.errorMessage + ". Reconnecting...");
-        console.log("Connection lost: " + response.errorMessage + ". Reconnecting...");
-
-    };
-
-    function checkDeviceOnline() {
-        $('#online_state').text('Offline');
-        $('#online_state').removeClass('badge btn-success').addClass('badge btn-danger');
-
-        clearInterval(offlineTimer);
-    };
-
-    function onMessageArrived(message) {
-        var topic = message.destinationName;
-        var payload = message.payloadString;
-        //console.log("Topic: " + topic + ", Message payload: " + payload);
-        $('#message').html(topic + ', ' + payload);
-        var message = topic.split('/');
-        var area = message[1];
-        var state = message[2];
-
-        var timestamp = Math.round((new Date()).getTime() / 1000);
-
-        $('#message-ts').html(Date());
-
-        switch (area) {
-            case 'online_status':
-                if (payload == 'online') {
-                    $('#online_state').text('Online');
-                    $('#online_state').removeClass('badge btn-danger').addClass('badge btn-success');
-
-                    clearInterval(offlineTimer);
-                    offlineTimer = setInterval(function () {
-                        //console.log("Offline ?");
-                        checkDeviceOnline();
-                    }, 5000);
-
-                    //$('#online_state').removeClass('label-danger').addClass('label-success');
-                } else {
-                    $('#online_state').removeClass('badge btn-success').addClass('badge btn-danger');
-
-                }
-                break;
-            case 'front': 
-                $('#value1').html('(Switch value: ' + payload + ')');
-                if (payload == 'true') {
-                    $('#label1').text('Closed');
-                    $('#label1').removeClass('label-success').addClass('label-success');
-                } else {
-                    $('#label1').text('Open');
-                    $('#label1').removeClass('label-success').addClass('label-danger');
-                }
-                break;
-            case 'back':
-                $('#value2').html('(Switch value: ' + payload + ')');
-                if (payload == 'true') {
-                    $('#label2').text('Closed');
-                    $('#label2').removeClass('label-danger').addClass('label-success');
-                } else {
-                    $('#label2').text('Open');
-                    $('#label2').removeClass('label-success').addClass('label-danger');
-                }
-                break;
-            case 'kitchen':
-                $('#value3').html('(Switch value: ' + payload + ')');
-                if (payload == 'true') {
-                    $('#label3').text('Closed');
-                    $('#label3').removeClass('label-danger').addClass('label-success');
-                } else {
-                    $('#label3').text('Open');
-                    $('#label3').removeClass('label-success').addClass('label-danger');
-                }
-                break;
-            case 'living':
-                    $('#livingTempSensor').html('(Sensor value: ' + payload + ')');
-                    $('#livingTempLabel').text(payload + ' RPM');
-                    $('#livingTempLabel').removeClass('').addClass('label-default');
-
-                var entry = new Array();
-                entry.push(timestamp);
-                entry.push(parseInt(payload));
-                livingTemp.push(entry);
-                // Show only 20 values
-                if (livingTemp.length >= 20) {
-                    livingTemp.shift()
-                }
-
-                var livingTempPlot = $.jqplot ('livingTempChart', [livingTemp], {
-                    axesDefaults: {
-                        labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-                        tickOptions: {
-                            showMark: false,
-                            showGridline: false,
-                            show: false,
-                            showLabel: false,
-                        }
-                      },
-                    grid: {
-                        gridLineColor: '#FFFFFF',
-                        borderWidth: 0,
-                        shadow: false,
-                    },
-                    seriesDefaults: {
-                        rendererOptions: {
-                            smooth: true
-                        },
-                        showMarker: false,
-                        lineWidth: 2,
-                      },
-                      axes: {
-                        xaxis: {
-                          renderer:$.jqplot.DateAxisRenderer,
-                          tickOptions:{
-                            formatString:'%T'
-                          },
-                          pad: 0
-                        },
-                        yaxis: {
-                        }
-                    }
-                });
-                break;
-            case 'basement':
-                $('#basementTempSensor').html('(Sensor value: ' + payload + ')');
-                if (payload >= 25) {
-                        $('#basementTempLabel').text(payload + ' °C - too hot');
-                        $('#basementTempLabel').removeClass('label-warning label-success label-info label-primary').addClass('label-danger');
-                } else if (payload >= 21) {
-                        $('#basementTempLabel').text(payload + ' °C - hot');
-                        $('#basementTempLabel').removeClass('label-danger label-success label-info label-primary').addClass('label-warning');
-                } else if (payload >= 18) {
-                        $('#basementTempLabel').text(payload + ' °C - normal');
-                        $('#basementTempLabel').removeClass('label-danger label-warning label-info label-primary').addClass('label-success');
-                } else if (payload >= 15) {
-                        $('#basementTempLabel').text(payload + ' °C - low');
-                        $('#basementTempLabel').removeClass('label-danger label-warning label-success label-primary').addClass('label-info');
-                } else if (payload <= 12) {
-                        $('#basementTempLabel').text(payload + ' °C - too low');
-                        $('#basementTempLabel').removeClass('label-danger label-warning label-success label-info').addClass('label-primary');
-                basementTemp.push(parseInt(payload));
-                if (basementTemp.length >= 20) {
-                    basementTemp.shift()
-                }
-
-                $('.basementTempSparkline').sparkline(basementTemp, {
-                    type: 'line',
-                    width: '160',
-                    height: '40'});
-                }
-                break;
-            default: console.log('Error: Data do not match the MQTT topic.'); break;
-        }
-    };
+<!--script type="text/javascript">
     $(document).ready(function() {
+        /* Connect to MQTT server */
         MQTTconnect();
-
-        offlineTimer = setInterval(function () {
-            //console.log("Offline ?");
-            checkDeviceOnline();
-        }, 5000);  
-
     });
-</script>
+</script-->
+
+<style type="text/css">
+    table.jqplot-table-legend, table.jqplot-cursor-legend {border: none;}
+    .btn-controls {width: 85px !important;}
+    .jqplot-chart { width: 100%; height: 300px;}
+</style>
+
+<div class="device-plot">
+    <div class="box">
+        <div class="box-header with-border">
+            <h2 id="title" class="box-title"></h2>
+        </div>
+
+        <div class="box-body">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                    <div id="plot">
+                        <div id="flot"></div>
+                        <div id="overlay"></div>
+                    </div>
+              </div>
+            </div>
+        </div>
+
+        <div class="box-body">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <div id="aqualoop-controls" class="jqplot-controls"></div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="float-left">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default btn-controls"><i class="fa fa-backward"></i><br/> Backward </button>
+                                    <button type="button" class="btn btn-default btn-controls"><i class="fa fa-forward"></i><br/> Forward </button>
+                                    <button type="button" class="btn btn-default btn-controls"><i class="fa fa-step-forward"></i><br/> Now </button>
+                                    <button type="button" class="btn btn-default btn-controls"><i class="fa fa-search-minus"></i><br/> Zoom out </button>
+                                    <button type="button" class="btn btn-default btn-controls"><i class="fa fa-search-plus"></i><br/> Zoom in </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="float-right">
+                                <div class="pull-right">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default btn-controls"><i class="fa fa-arrows-h"></i><br/> Hour </button>
+                                    <button type="button" class="btn btn-default btn-controls"><i class="fa fa-arrows-h"></i><br/> Day </button>
+                                    <button type="button" class="btn btn-default btn-controls"><i class="fa fa-arrows-h"></i><br/> Week </button>
+                                    <button type="button" class="btn btn-default btn-controls"><i class="fa fa-arrows-h"></i><br/> Month </button>
+                                    <button type="button" class="btn btn-default btn-controls"><i class="fa fa-arrows-h"></i><br/> Year </button>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+              </div>
+            </div>
+        </div> 
+
+    </div>
+</div>
 
 
 <div class="device-status">
 <div class="box">
 
-
 <div class="box-header with-border">
-        <h2 class="box-title">AL-MS Status: <?= Html::encode($this->title) ?>  <span id="online_state" class="btn-danger badge">Offline</span></h2>
+        <h2 class="box-title">AL-MS Status: <span id="online_state" class="btn-danger badge">Offline</span></h2>
 
         <?php if ($site != "none") {
             echo '<p>Location: ';

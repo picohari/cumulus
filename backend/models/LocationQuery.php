@@ -34,6 +34,7 @@ class LocationQuery extends \yii\db\ActiveQuery
         return parent::one($db);
     }
 
+    // FIXME: Rename function for better reading
     public function owned()
     {
         return $this->andWhere(['user_id' => Yii::$app->user->id]);

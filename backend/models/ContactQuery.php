@@ -34,6 +34,7 @@ class ContactQuery extends \yii\db\ActiveQuery
         return parent::one($db);
     }
 
+    // FIXME: Rename this function to better comprehension
     public function owned()
     {
         return $this->andWhere(['user_id' => Yii::$app->user->id]);

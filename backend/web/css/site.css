@@ -3,6 +3,15 @@ body {
     height: 100%;
 }
 
+#overlay {
+	position: absolute;
+	width: 100%;
+	top: 0;
+	margin: 200px auto;
+	text-align: center;
+	color: grey;
+}
+
 .wrap {
     min-height: 100%;
     height: auto;

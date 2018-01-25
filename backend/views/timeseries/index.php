@@ -6,6 +6,8 @@ use yii\helpers\Html;
 /* @var $searchModel backend\models\ContactSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
+				//src="http://cumulus.intewa.net:3000/dashboard/snapshot/05pjCp5XeJFh30NwYXi3QRBIkoDg265V"
+
 $this->title = Yii::t('app', 'OpenTSDB');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -13,6 +15,15 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="opentsdb-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
+
+
+    <div>
+		<!-- iframe 
+				src="http://cumulus.intewa.net:3000/dashboard-solo/db/cumulus?orgId=1&from=1516098890082&to=1516102490082&refresh=5s&panelId=1"
+				width="100%"
+				height="300"
+				frameborder="0"></iframe -->    	
+    </div>
 
     <h6>
     	<strong>Version: </strong><?php echo $tsdb_version['version']; ?>

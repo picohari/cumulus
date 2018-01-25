@@ -115,8 +115,6 @@ class OpenTSDBService extends Model
     public $opentsdb_data = array();
 
 
-
-
     public function __construct($_opentsdb_host = null) {
 
     	// Get configuration from params.php
@@ -146,9 +144,6 @@ class OpenTSDBService extends Model
 
     }
 
-
-
-
     private function requestJSON($url){
 
 		$ch = curl_init();
@@ -162,10 +157,6 @@ class OpenTSDBService extends Model
 
 		return $array;
     }
-
-
-
-
 
     public function getVersion()
     {
@@ -223,7 +214,7 @@ class OpenTSDBService extends Model
     {
 
     	//   http://192.168.1.107:4242/api/query?start=2017/10/15-00:00:01&end=2017/10/15-14:40:18&m=sum:rate:proc.net.packets{host=*}
-    	$json = $this->requestJSON($this->_opentsdb_base_url.'/api/query?start='.$start.'&end='.$end.'&m='.$aggregator.':'.$rate.':'.$metric.'{'.$qtags.'}');
+    	$json = $this->requestJSON($this->_opentsdb_base_url.'/api/query?arrays=true&start='.$start.'&end='.$end.'&m='.$aggregator.':'.$rate.':'.$metric.'{'.$qtags.'}');
 
 		if(!empty($json)) {
 			return $json['0']['dps'];

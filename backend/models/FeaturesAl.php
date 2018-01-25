@@ -33,8 +33,8 @@ class FeaturesAl extends \yii\db\ActiveRecord
     {
         return [
             [['contact_id'], 'required'],
-            [['feature_id', 'power_fail', 'pump_fail', 'connection_lost', 'contact_id'], 'integer'],
             [['contact_id'], 'exist', 'skipOnError' => true, 'targetClass' => Contact::className(), 'targetAttribute' => ['contact_id' => 'contact_id']],
+            [['feature_id', 'power_fail', 'pump_fail', 'connection_lost', 'contact_id'], 'integer'],
         ];
     }
 
@@ -45,10 +45,10 @@ class FeaturesAl extends \yii\db\ActiveRecord
     {
         return [
             'feature_id' => Yii::t('app', 'Feature ID'),
+            'contact_id' => Yii::t('app', 'Contact ID'),
             'power_fail' => Yii::t('app', 'Power Fail'),
             'pump_fail' => Yii::t('app', 'Pump Fail'),
             'connection_lost' => Yii::t('app', 'Connection Lost'),
-            'contact_id' => Yii::t('app', 'Contact ID'),
         ];
     }
 
