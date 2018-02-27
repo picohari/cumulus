@@ -1,6 +1,5 @@
 
 
-
 var Exception = function(type, message, code) {
 	return {
 		type: type,
@@ -29,18 +28,24 @@ ic.load = function(args, skipDefaultErrorHandling) {
 
 	if (args.url === undefined) { // local middleware by default
 		args.url = ic.options.middleware[0].url;
-		//args.url = '/index.php?r=timeseries/getdata';
+		args.url += '/index.php?r=';
 	}
 
 	if (args.controller !== undefined) {
-		args.url += '/' + args.controller;
+		//args.url += '/' + args.controller;
+		args.url += args.controller;
 	}
 
+
 /*
-	if (args.identifier !== undefined) {
-		args.url += '/' + args.identifier;
+	if (args.metric !== undefined) {
+		args.url += '&metric=' + args.metric;
 	}
 */
+
+	if (args.identifier !== undefined) {
+		args.url += '&metric=' + args.identifier;
+	}
 
 	//args.url += '.json';
 
@@ -50,6 +55,7 @@ ic.load = function(args, skipDefaultErrorHandling) {
 		args.url += '?unique=' + Date.now();
 	}
 */
+
 	if (args.data === undefined) {
 		args.data = { };
 	}
@@ -83,6 +89,49 @@ ic.load.errorHandler = function(xhr, skipDefaultErrorHandling) {
 };
 
 
+/**
+ * Load capabilities from middleware
+ */
+ic.capabilities.load = function() {
+
+	console.log("Capabilities...");
+
+	// execute query asynchronously to refresh from middleware
+	var deferred = ic.load({
+		controller: 'capabilities/list'
+	}).done(function(json) {
+		$.extend(true, ic.capabilities, json.capabilities);
+		try {
+			localStorage.setItem('ic.capabilities', JSON.stringify(json)); // cache it
+		}
+		catch (e) { }
+	});
+
+	// get cached value to avoid blocking frontend startup
+	try {
+		var json = localStorage.getItem('ic.capabilities');
+		if (json !== false) {
+			// use cached value and return immediately
+			$.extend(true, ic.capabilities, JSON.parse(json).capabilities);
+			return $.Deferred().resolve();
+		}
+	}
+	catch (e) {	}
+
+	return deferred;
+};
+
+
+/**
+ * Lookup definition
+ */
+ic.capabilities.definitions.get = function(section, name) {
+	for (var i in this[section]) {
+		if (this[section][i].name == name) {
+			return this[section][i];
+		}
+	}
+};
 
 
 
@@ -92,6 +141,86 @@ ic.load.errorHandler = function(xhr, skipDefaultErrorHandling) {
 
 
 
+
+/**
+ * Parse URL GET parameters
+ */
+ic.parseUrlParams = function() {
+	var vars = $.getUrlParams();
+	var entities = [];
+	var save = false;
+
+/*
+	for (var key in vars) {
+		if (vars.hasOwnProperty(key)) {
+			switch (key) {
+				case 'uuid': // add optional uuid from url
+					entities = (typeof vars[key] == 'string') ? [vars[key]] : vars[key]; // handle multiple uuids
+					break;
+
+				case 'save': // save new uuids in cookie
+					save = vars[key];
+					break;
+
+				case 'from':
+				case 'to':
+					// disable automatic refresh
+					vz.options.refresh = false;
+					// ms or speaking timestamp
+					var ts = (/^-?[0-9]+$/.test(vars[key])) ? parseInt(vars[key]) : new Date(vars[key]).getTime();
+					if (key == 'from')
+						vz.options.plot.xaxis.min = ts;
+					else
+						vz.options.plot.xaxis.max = ts;
+					break;
+
+				case 'style': // explicitly set display style
+				case 'fillstyle': // explicitly set fill style
+				case 'linewidth': // explicitly set line width
+				case 'group': // explicitly set data grouping
+				case 'options': // data load options
+					vz.options[key] = vars[key];
+					break;
+
+				case 'hide':
+					$(vars[key]).hide();
+					break;
+			}
+		}
+	}
+
+*/
+
+	entities.forEach(function(identifier) {
+		identifier = identifier.split('@');
+		var uuid = identifier[0];
+		var middleware = (identifier.length > 1) ? identifier[1] : ic.options.middleware[0].url;
+
+		var entity = new Entity({
+			uuid: uuid,
+			middleware: middleware,
+			cookie: save
+		});
+
+		// avoid double entries
+		var knownEntity = false;
+		ic.entities.each(function(entity) {
+			if (entity.uuid == uuid) {
+				knownEntity = true;
+			}
+		});
+
+		if (!knownEntity) {
+			ic.entities.push(entity);
+		}
+	});
+
+/*
+	if (save) {
+		ic.entities.saveCookie();
+	}
+*/
+};
 
 
 
@@ -116,7 +245,8 @@ var Middleware = function(definition) {
  */
 Middleware.prototype.loadEntities = function() {
 	return ic.load({
-		controller: 'entity',
+		//controller: 'entity',
+		controller: 'index.php?r=timeseries/getmetrics&device_id=1',
 		url: this.url,
 		context: this
 	}).then(function(json) {
@@ -137,6 +267,35 @@ Middleware.prototype.loadEntities = function() {
 		return this;
 	});
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -100,6 +100,8 @@ function drawPlot(from, to) {
         if (plot == null) {
 
             /* jQplot Version */
+            console.log(data);
+            
             plot = $.plot($("#flot"), data, ic.options.plot);
 
         } else {

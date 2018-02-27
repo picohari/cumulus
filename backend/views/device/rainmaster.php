@@ -25,203 +25,65 @@ $this->registerJs('
 <!-- link href="css/bootstrap.css" rel="stylesheet" -->
 <!-- jQuery -->
 <!-- script type="text/javascript" src="js/jquery-1.11.2.min.js"></script -->
-<!-- Sparkline -->
-<script type="text/javascript" src="js/jquery.sparkline.min.js"></script>
-<!-- jgPlot -->
-<link class="include" rel="stylesheet" type="text/css" href="dist/jquery.jqplot.min.css" />
+<script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js"></script>
+<link   type="text/css" href="js/jquery-ui/jquery-ui.min.css" rel="stylesheet">
 
-<script type="text/javascript" src="js/jquery.jqplot.min.js"></script>
-<script type="text/javascript" src="js/jqplot.canvasTextRenderer.min.js"></script>
-<script type="text/javascript" src="js/jqplot.canvasAxisLabelRenderer.min.js"></script>
-<script type="text/javascript" src="js/jqplot.dateAxisRenderer.min.js"></script>
+<!-- jQuery Sparkline -->
+<script type="text/javascript" src="js/ext/jquery-extensions.js"></script>
+<!-- jQuery Moment -->
+<script type="text/javascript" src="js/ext/moment.min.js"></script>
+<!-- jQuery Sparkline -->
+<script type="text/javascript" src="js/jquery-sparkline/jquery.sparkline.min.js"></script>
+
+<!-- jQuery jgPlot -->
+<!--
+<link class="include" rel="stylesheet" type="text/css" href="js/jquery-jqplot/jquery.jqplot.min.css" />
+<script type="text/javascript" src="js/jquery-jqplot/jquery.jqplot.min.js"></script>
+<script type="text/javascript" src="js/jquery-jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+<script type="text/javascript" src="js/jquery-jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
+<script type="text/javascript" src="js/jquery-jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
+<script type="text/javascript" src="js/jquery-jqplot/plugins/jqplot.cursor.min.js"></script>
+<script type="text/javascript" src="js/jquery-jqplot/plugins/jqplot.highlighter.min.js"></script>
+-->
+
+<!-- flot -->
+<script type="text/javascript" src="js/flot/jquery.flot.js"></script>
+<script type="text/javascript" src="js/flot/jquery.flot.crosshair.js"></script>
+<script type="text/javascript" src="js/flot/jquery.flot.time.js"></script>
+<script type="text/javascript" src="js/flot/jquery.flot.selection.js"></script>
+<script type="text/javascript" src="js/flot/jquery.flot.resize.js"></script>
+<script type="text/javascript" src="js/flot/jquery.flot.axislabels.js"></script>
+<script type="text/javascript" src="js/flot/jquery.flot.canvas.js"></script>
+<!--script type="text/javascript" src="js/ext/curvedLines.js"></script -->
 
 <!-- socket.io for communication -->
 <!-- script type="text/javascript" src="http://localhost:3000/socket.io/socket.io.js"></script -->
 
 <!-- MQTT Websocket -->
-<script type="text/javascript" src="js/mqttws31.js"></script>
-<script type="text/javascript">
+<script type="text/javascript" src="js/mqtt/mqttws31.js"></script>
 
-    var livingTemp = new Array();
-    var basementTemp = new Array();
+<!-- Application specific sources -->
+<script type="text/javascript" src="js/init.js"></script>
+<script type="text/javascript" src="js/functions.js"></script>
+<script type="text/javascript" src="js/entities.js"></script>
+<script type="text/javascript" src="js/wui.js"></script>
+<script type="text/javascript" src="js/entity.js"></script>
+<script type="text/javascript" src="js/options.js"></script>
 
-    var host = server;
-    var port = 15675;
-    var topic = uuid + '/#';
-    var useTLS = false;
-    var cleansession = true;
-    var mqtt;
-    var reconnectTimeout = 2000;
+<!--
+<script type="text/javascript" src="js/graph.js"></script>
+-->
 
-    function MQTTconnect() {
-    if (typeof path == "undefined") {
-        path = '/ws';
-    }
-    mqtt = new Paho.MQTT.Client(
-            host,
-            port,
-            path,
-            "mqtt_panel" + parseInt(Math.random() * 100, 10)
-    );
-        var options = {
-            userName : "device",
-            password : "device",
-            mqttVersion: 3,
-            timeout: 3,
-            useSSL: useTLS,
-            cleanSession: cleansession,
-            onSuccess: onConnect,
-            onFailure: function (message) {
-                $('#status').html("Connection failed: " + message.errorMessage + "Retrying...");
-                setTimeout(MQTTconnect, reconnectTimeout);
-            }
-        };
 
-        mqtt.onConnectionLost = onConnectionLost;
-        mqtt.onMessageArrived = onMessageArrived;
-        console.log("Host: "+ host + ", Port: " + port + ", Path: " + path + " TLS: " + useTLS);
-        console.log("Topic: "+ topic);
-        mqtt.connect(options);
-    };
+<script type="text/javascript" src="js/mqtt.js"></script>
 
-    function onConnect() {
-        $('#status').html('Connected to ' + host + ':' + port + path);
-        mqtt.subscribe(topic, {qos: 0});
-        $('#topic').html(topic);
-    };
-
-    function onConnectionLost(response) {
-        setTimeout(MQTTconnect, reconnectTimeout);
-        //$('#status').html("Connection lost: " + response.errorMessage + ". Reconnecting...");
-        console.log("Connection lost: " + response.errorMessage + ". Reconnecting...");
-
-    };
-
-    function onMessageArrived(message) {
-        var topic = message.destinationName;
-        var payload = message.payloadString;
-        //console.log("Topic: " + topic + ", Message payload: " + payload);
-        $('#message').html(topic + ', ' + payload);
-        var message = topic.split('/');
-        var area = message[1];
-        var state = message[2];
-
-        var timestamp = Math.round((new Date()).getTime() / 1000);
-        switch (area) {
-            case 'front': 
-                $('#value1').html('(Switch value: ' + payload + ')');
-                if (payload == 'true') {
-                    $('#label1').text('Closed');
-                    $('#label1').removeClass('label-danger').addClass('label-success');
-                } else {
-                    $('#label1').text('Open');
-                    $('#label1').removeClass('label-success').addClass('label-danger');
-                }
-                break;
-            case 'back':
-                $('#value2').html('(Switch value: ' + payload + ')');
-                if (payload == 'true') {
-                    $('#label2').text('Closed');
-                    $('#label2').removeClass('label-danger').addClass('label-success');
-                } else {
-                    $('#label2').text('Open');
-                    $('#label2').removeClass('label-success').addClass('label-danger');
-                }
-                break;
-            case 'kitchen':
-                $('#value3').html('(Switch value: ' + payload + ')');
-                if (payload == 'true') {
-                    $('#label3').text('Closed');
-                    $('#label3').removeClass('label-danger').addClass('label-success');
-                } else {
-                    $('#label3').text('Open');
-                    $('#label3').removeClass('label-success').addClass('label-danger');
-                }
-                break;
-            case 'living':
-                    $('#livingTempSensor').html('(Sensor value: ' + payload + ')');
-                    $('#livingTempLabel').text(payload + ' RPM');
-                    $('#livingTempLabel').removeClass('').addClass('label-default');
-
-                var entry = new Array();
-                entry.push(timestamp);
-                entry.push(parseInt(payload));
-                livingTemp.push(entry);
-                // Show only 20 values
-                if (livingTemp.length >= 20) {
-                    livingTemp.shift()
-                }
-
-                var livingTempPlot = $.jqplot ('livingTempChart', [livingTemp], {
-                    axesDefaults: {
-                        labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-                        tickOptions: {
-                            showMark: false,
-                            showGridline: false,
-                            show: false,
-                            showLabel: false,
-                        }
-                      },
-                    grid: {
-                        gridLineColor: '#FFFFFF',
-                        borderWidth: 0,
-                        shadow: false,
-                    },
-                    seriesDefaults: {
-                        rendererOptions: {
-                            smooth: true
-                        },
-                        showMarker: false,
-                        lineWidth: 2,
-                      },
-                      axes: {
-                        xaxis: {
-                          renderer:$.jqplot.DateAxisRenderer,
-                          tickOptions:{
-                            formatString:'%T'
-                          },
-                          pad: 0
-                        },
-                        yaxis: {
-                        }
-                    }
-                });
-                break;
-            case 'basement':
-                $('#basementTempSensor').html('(Sensor value: ' + payload + ')');
-                if (payload >= 25) {
-                        $('#basementTempLabel').text(payload + ' °C - too hot');
-                        $('#basementTempLabel').removeClass('label-warning label-success label-info label-primary').addClass('label-danger');
-                } else if (payload >= 21) {
-                        $('#basementTempLabel').text(payload + ' °C - hot');
-                        $('#basementTempLabel').removeClass('label-danger label-success label-info label-primary').addClass('label-warning');
-                } else if (payload >= 18) {
-                        $('#basementTempLabel').text(payload + ' °C - normal');
-                        $('#basementTempLabel').removeClass('label-danger label-warning label-info label-primary').addClass('label-success');
-                } else if (payload >= 15) {
-                        $('#basementTempLabel').text(payload + ' °C - low');
-                        $('#basementTempLabel').removeClass('label-danger label-warning label-success label-primary').addClass('label-info');
-                } else if (payload <= 12) {
-                        $('#basementTempLabel').text(payload + ' °C - too low');
-                        $('#basementTempLabel').removeClass('label-danger label-warning label-success label-info').addClass('label-primary');
-                basementTemp.push(parseInt(payload));
-                if (basementTemp.length >= 20) {
-                    basementTemp.shift()
-                }
-
-                $('.basementTempSparkline').sparkline(basementTemp, {
-                    type: 'line',
-                    width: '160',
-                    height: '40'});
-                }
-                break;
-            default: console.log('Error: Data do not match the MQTT topic.'); break;
-        }
-    };
+<!--script type="text/javascript">
     $(document).ready(function() {
+        /* Connect to MQTT server */
         MQTTconnect();
     });
-</script>
+</script-->
+
 
 
 <div class="device-status">

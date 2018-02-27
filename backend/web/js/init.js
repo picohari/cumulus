@@ -22,7 +22,6 @@
  */
 
 
-
  /**
  * INTEWA Cumulus namespace
  *
@@ -31,16 +30,20 @@
  */
 var ic = {
 	wui: {					// web user interface
-		dialogs: { },
+		dialogs: {},
 		timeout: null
 	},
-	plot: { },				// flot instance
-	options: { },			// options loaded from cookies in options.js
+	plot: {},				// flot instance
+	options: {},			// options loaded from cookies in options.js
 	
-	entities: [ ],			// entity properties + data
-	middleware: [ ],		// array of all known middlewares
-};
+	middleware: [],		// array of all known middlewares
 
+	entities: [],			// entity properties + data
+	capabilities: {		// debugging and runtime information from middleware
+		definitions: {}	// definitions of entities & properties
+	},
+	metrics: []
+};
 
 
 /**
@@ -60,34 +63,63 @@ $(document).ready(function() {
     //console.log(ic.options.plot.xaxis.min);
     //console.log(ic.options.plot.xaxis.max);
 
+    ic.metrics.push('pressure', 'filllevel', 'current', 'temperature');
+
+
+
+
+    //ic.parseUrlParams();
+
 	// initialize user interface (may need to wait for onLoad on Safari)
 	ic.wui.init();
 
+/*
 	// middleware(s)
 	ic.options.middleware.forEach(function(middleware) {
 		ic.middleware.push(new Middleware(middleware));
 	});
-
-	ic.entities.push(new Entity({
-		middleware: 'index.php?r=timeseries',
-		active: true
-	}));
-
-	ic.entities.loadDetails().always(function() {
+*/
 
 /*
-		if (ic.entities.length === 0) {
-			ic.wui.dialogs.init();
-		}
-
-		ic.entities.loadData().done(function() {
-			// vz.wui.resizePlot();
-			ic.wui.drawPlot();
-		});
+	ic.entities.push(new Entity({
+		//middleware: ic.options.middleware[0].url,		// If provided, then it will NOT be overwritten by options settings...
+		active: true,
+		//type: metric,
+		uuid: "1234"
+	}));	
 */
+
+
+	ic.options.plot.axesAssigned = false; // force axis assignment
+
+	ic.capabilities.load().done(function() {
+
+
+		ic.metrics.forEach(function(metric) {
+			ic.entities.push(new Entity({
+				//middleware: ic.options.middleware[0].url,		// If provided, then it will NOT be overwritten by options settings...
+				active: true,
+				type: metric,
+				//uuid: "1234"
+			}));		
+		});
+
+
+		//ic.entities.loadDetails().always(function() {
+		ic.entities.loadMetrics().always(function() {
+
+			ic.entities.showTable();
+/*
+			ic.entities.loadData().done(function() {
+				// vz.wui.resizePlot();
+				ic.wui.drawPlot();
+			});
+*/
+
+		});
+
+
+
 	});
-
-
-
 
 });

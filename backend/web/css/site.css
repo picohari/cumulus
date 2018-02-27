@@ -11,6 +11,23 @@ body {
 	text-align: center;
 	color: grey;
 }
+#legend {
+	margin-top: 10px;
+}
+td.legendLabel {
+	padding-left: 5px;
+}
+
+td.visibility {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.axisLabels { /* if axislabels plugin is used */
+	font-size: smaller;
+	color: #333 !important;
+	top: -10px !important;
+}
 
 .wrap {
     min-height: 100%;

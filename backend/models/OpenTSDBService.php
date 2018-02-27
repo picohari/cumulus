@@ -217,7 +217,11 @@ class OpenTSDBService extends Model
     	$json = $this->requestJSON($this->_opentsdb_base_url.'/api/query?arrays=true&start='.$start.'&end='.$end.'&m='.$aggregator.':'.$rate.':'.$metric.'{'.$qtags.'}');
 
 		if(!empty($json)) {
-			return $json['0']['dps'];
+
+            if ( isset($json['error']) )
+                return null;
+            else
+    		    return $json['0']['dps'];
 			//return $json;
 		} else {
 			return null;

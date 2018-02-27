@@ -99,11 +99,37 @@ class TimeseriesController extends Controller
 
         if(count($data) > 0 ) {
 
+            // We must multiply timestamp of OpenTSDB from seconds to milliseconds
+            foreach ($data as $index => $tuples) {
+                $data[$index][0] *= 1000;
+            }
+
+            // find minimum
+            $timestamp = NULL;
+            $max = NULL;
+            $min = NULL;
+            $max_tuple = NULL;
+            $min_tuple = NULL;
+
+            foreach ($data as $index => $tuples) {
+                if (is_null($max) || $data[$index][1] > $max) {
+                    $max = $data[$index][1];
+                    $max_tuple = $tuples;
+                }
+                if (is_null($min) || $data[$index][1] < $min) {
+                    $min = $data[$index][1];
+                    $min_tuple = $tuples;
+                }
+            }
+
+
             return array('status' => true, 
                          'data'   => array(
                             'tuples' => $data, 
                             'metric' => $metric, 
-                            'uuid' => $device->uuid, 
+                            'uuid' => $device->uuid,
+                            'min' => $min_tuple, 
+                            'max' => $max_tuple, 
                             'rows'=> count($data)
                         ));
 
@@ -118,7 +144,143 @@ class TimeseriesController extends Controller
 
 
 
-    public function actionGetmetrics($device_id)
+    public function actionGetmetrics($device_id, $metric)
+    {
+
+        //$from = Yii::$app->getRequest()->getQueryParam('from');
+        //$to = Yii::$app->getRequest()->getQueryParam('to');
+
+        Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+
+/*
+        // Problem: Liefert nicht alle, sondern nur die ersten 10... Abhilfe mit "pagination"
+        $provider_data = new ArrayDataProvider([
+            'allModels' => $opentsdb->getMetricsData("2017/10/15-00:00:01", "2018/02/01-00:00:00", "none", "false", "alms.temperature", ""),
+        ]);
+        
+        $data = $provider_data->getModels();
+*/
+
+        // Suche Device mit gelieferten ID
+        $device = Device::findOne(['device_id' => $device_id, 'user_id' => Yii::$app->user->id]);
+
+        // Falls kein Device gefunden, abbrechen
+        if($device == null) return; 
+
+
+        // Abhängig vom Product des Devices, wird auf eine spezifische Darstellung umgeleitet.
+        switch ($device->product_id) {
+            // AQUALOOP
+            case 10 :
+
+                switch($metric) {
+                    case 'temperature' :
+                        return array('status' => true, 
+                                                'entity'   =>  array(
+                                                    //'uuid'          => "1",
+                                                    'type'          => "temperature",
+                                                    'active'        => true,
+                                                    'color'         => "#ce93d8",
+                                                    'description'   => "Temperature Bioreactor",
+                                                    'fillstyle'     => 0,
+                                                    'gap'           => 0,
+                                                    'public'        => true,
+                                                    'resolution'    => 1,
+                                                    'style'         => "lines",
+                                                    'title'         => "Temperature BR",
+                                                    'yaxis'         => "auto"
+                                                    ),
+                                                );
+                        break;
+
+                    case 'current' :
+                        return array('status' => true, 
+                                                'entity'   =>  array(
+                                                    //'uuid'          => "2",
+                                                    'type'          => "current",
+                                                    'active'        => true,
+                                                    'color'         => "#ce93d8",
+                                                    'description'   => "Current Suction Pump",
+                                                    'fillstyle'     => 0,
+                                                    'gap'           => 0,
+                                                    'public'        => true,
+                                                    'resolution'    => 1,
+                                                    'style'         => "lines",
+                                                    'title'         => "Current Pump",
+                                                    'yaxis'         => "auto"
+                                                    ),
+                                                );
+                        break;
+
+                    case 'filllevel' :
+                        return array('status' => true, 
+                                                'entity'   =>  array(
+                                                    //'uuid'          => "3",
+                                                    'type'          => "filllevel",
+                                                    'active'        => true,
+                                                    'color'         => "#ce93d8",
+                                                    'description'   => "Tanklevel Bioreactor",
+                                                    'fillstyle'     => 0,
+                                                    'gap'           => 0,
+                                                    'public'        => true,
+                                                    'resolution'    => 1,
+                                                    'style'         => "lines",
+                                                    'title'         => "Tanklevel BR",
+                                                    'yaxis'         => "auto"
+                                                    ),
+                                                );
+                        break;
+
+                    case 'pressure' :
+                        return array('status' => true, 
+                                                'entity'   =>  array(
+                                                    //'uuid'          => "4",
+                                                    'type'          => "pressure",
+                                                    'active'        => true,
+                                                    'color'         => "#ce93d8",
+                                                    'description'   => "Pressure Suction Pump",
+                                                    'fillstyle'     => 0,
+                                                    'gap'           => 0,
+                                                    'public'        => true,
+                                                    'resolution'    => 1,
+                                                    'style'         => "lines",
+                                                    'title'         => "Pressure Pump",
+                                                    'yaxis'         => "auto"
+                                                    ),
+                                                );
+                        break;
+                }
+
+
+
+
+                break;
+
+            // RAINMASTER
+            case 20 :
+
+                return array('status' => true, 
+                                         'entity'   => array(
+                                            'metrics' => ['pressure', 'volume', 'rpm', 'temperature'], 
+                                        ));
+                break;
+
+            //default: throw new NotFoundHttpException('The requested page does not exist.');
+            default: return $this->redirect(['index']);
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+    public function actionGetmetric($device_id)
     {
 
         //$from = Yii::$app->getRequest()->getQueryParam('from');
@@ -147,20 +309,16 @@ class TimeseriesController extends Controller
             // AQUALOOP
             case 10 : 
                 return array('status' => true, 
-                                        'entities'   => array(
-                                            array(  'type'          => "temperature",
+                                        'entity'   =>  array(
+                                                    'type'          => "temperature",
+                                                    'description'   => "Temperatur Bioreactor",
+                                                    'title'         => "Temperatur BR",
                                                     'active'        => true,
-                                                    'description'   => "Temperatur BR",
                                                     'style'         => "lines",
-                                                    'metric'        => "temperature"
+                                                    'uuid'          => "1234",
+
                                                 ),
-                                            array(  'type'          => "pressure",
-                                                    'active'        => true,
-                                                    'description'   => "Druck Saugpumpe",
-                                                    'style'         => "lines",
-                                                    'metric'        => "pressure"
-                                                ),
-                                        ));
+                                        );
                 break;
 
 
@@ -178,8 +336,6 @@ class TimeseriesController extends Controller
 
 
     }
-
-
 
 
 

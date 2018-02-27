@@ -22,16 +22,18 @@
  */
 
 
-
-//var jsonurl = "http://localhost/~dk6yf/sapiroid/yii2/backend/web/index.php?r=timeseries/getdata";
-//var plot;
-
-
 ic.options = {
-    language: 'de',
+    language: 'en',
+    precision: 2,                   // TODO update from middleware capabilities?
+    maxPrecision: {                 // override precision for certain units
+        '°C': 1
+    },
     tuples: null,               	// automatically determined by plot size
-    refresh: true,              	// update chart if zoomed to current timestamp
+    refresh: false,              	// update chart if zoomed to current timestamp
     interval: 1*24*60*60*1000,    	// 1 day default time interval to show
+    minTimeout: 2000,
+    lineWidthDefault: 0.8,
+    lineWidthSelected: 1,
 	middleware: [
 		{
 			title: 'Local (default)',
@@ -41,12 +43,11 @@ ic.options = {
 	],
 };
 
+
 /**
  * Plot options are passed on to flot
  */
 ic.options.plot = {
-
-
     colors: ['#83CAFF', '#7E0021', '#FFD320', '#FF420E', '#004586', '#0084D1', '#C5000B', '#FF950E', '#4B1F6F', '#AECF00', '#314004', '#83CAFF'],
     series: {
         lines: {
@@ -59,27 +60,48 @@ ic.options.plot = {
         shadowSize: 0.95,
         //curvedLines: {active: true},
     },
-
     crosshair: {
         mode: "x",
     },
-
     selection: {
         mode: "x",
     },
-
     grid: {
         hoverable: true,
         autoHighlight: false,
         borderWidth: 0,
         borderColor: '#FFFFFF',
     },
-
     xaxis: { 
         mode: "time",
         timeformat: "%d.%m.%Y <br/> %H:%M:%S",
+        timezone: 'browser',
     },
-
+    yaxis: {
+        //min: 40,
+        //max: 80,
+        //tickSize: 5,
+    },
+    yaxes: [
+        {
+            axisLabel: '', // assign el. energy to first axis- remove if not used
+            tickFormatter: ic.wui.tickFormatter     // show axis label
+        },
+        {
+            //alignTicksWithAxis: 1,
+            position: 'top',
+            tickFormatter: ic.wui.tickFormatter     // show axis label
+        }
+    ],
+    legend: {
+        show: true,
+        position: 'nw',
+        backgroundOpacity: 0.80,
+        container: '#legend'
+    },
+    axisLabels: {
+        show: true // set to true to show labels
+    },
 /*
     series: {
         shadowSize: 0,
@@ -91,29 +113,10 @@ ic.options.plot = {
             radius: 3
         }
     },
-    legend: {
-        show: true,
-        position: 'nw',
-        backgroundOpacity: 0.80,
-    },
     xaxis: {
         mode: 'time',
         timezone: 'browser'
     },
-    axisLabels: {
-        show: false // set to true to show labels
-    },
-    yaxes: [
-        {
-            axisLabel: 'W', // assign el. energy to first axis- remove if not used
-            //tickFormatter: vz.wui.tickFormatter     // show axis label
-        },
-        {
-            // alignTicksWithAxis: 1,
-            position: 'right',
-            //tickFormatter: vz.wui.tickFormatter     // show axis label
-        }
-    ],
     selection: { mode: 'x' },
     crosshair: { mode: 'x' },
     grid: {
